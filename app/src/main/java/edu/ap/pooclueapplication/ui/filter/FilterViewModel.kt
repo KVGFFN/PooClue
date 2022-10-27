@@ -1,13 +1,13 @@
-package edu.ap.pooclueapplication.ui.map
+package edu.ap.pooclueapplication.ui.filter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class DashboardViewModel : ViewModel() {
+class FilterViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is map Fragment"
+        value = "This is home Fragment"
     }
     val text: LiveData<String> = _text
 }

@@ -1,4 +1,4 @@
-package edu.ap.pooclueapplication.ui.list
+package edu.ap.pooclueapplication.ui.filter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import edu.ap.pooclueapplication.databinding.FragmentNotificationsBinding
+import edu.ap.pooclueapplication.databinding.FragmentHomeBinding
 
-class NotificationsFragment : Fragment() {
+class FilterFragment : Fragment() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class NotificationsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        val filterViewModel =
+            ViewModelProvider(this).get(FilterViewModel::class.java)
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textHome
+        filterViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root
