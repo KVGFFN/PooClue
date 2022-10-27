@@ -1,4 +1,4 @@
-package edu.ap.pooclueapplication.ui.home
+package edu.ap.pooclueapplication.ui.filter
 
 import android.os.Bundle
 import android.view.LayoutInflater

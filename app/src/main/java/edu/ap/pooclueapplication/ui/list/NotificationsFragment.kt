@@ -1,4 +1,4 @@
-package edu.ap.pooclueapplication.ui.notifications
+package edu.ap.pooclueapplication.ui.list
 
 import android.os.Bundle
 import android.view.LayoutInflater

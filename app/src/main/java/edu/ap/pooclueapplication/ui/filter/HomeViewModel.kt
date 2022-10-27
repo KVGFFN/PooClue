@@ -1,4 +1,4 @@
-package edu.ap.pooclueapplication.ui.home
+package edu.ap.pooclueapplication.ui.filter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
