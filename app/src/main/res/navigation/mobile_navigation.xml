@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_map"
-        android:name="edu.ap.pooclueapplication.ui.dashboard.DashboardFragment"
+        android:name="edu.ap.pooclueapplication.ui.map.DashboardFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_dashboard" />
 

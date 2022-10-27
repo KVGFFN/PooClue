@@ -1,4 +1,4 @@
-package edu.ap.pooclueapplication.ui.dashboard
+package edu.ap.pooclueapplication.ui.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
