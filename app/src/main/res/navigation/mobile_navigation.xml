@@ -15,7 +15,7 @@
         android:id="@+id/navigation_map"
         android:name="edu.ap.pooclueapplication.ui.map.MapFragment"
         android:label="@string/title_map"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_map" />
 
     <fragment
         android:id="@+id/navigation_list"
