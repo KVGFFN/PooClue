@@ -15,7 +15,6 @@ import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
-
 class MapFragment : Fragment() {
 
     private var _binding: FragmentMapBinding? = null
@@ -51,7 +50,7 @@ class MapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Configuration.getInstance().setUserAgentValue("user")
+        Configuration.getInstance().setUserAgentValue("Poo Clue")
         locationPermissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION))
