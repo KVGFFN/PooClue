@@ -60,7 +60,6 @@ class MapFragment : Fragment() {
         val root: View = binding.root
 
         val map = binding.mapview
-        map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true);
         map.setClickable(true);
         map.setUseDataConnection(true);
