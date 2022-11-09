@@ -1,10 +1,13 @@
 package edu.ap.pooclueapplication.ui.filter
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import edu.ap.pooclueapplication.ToiletContract
+import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentFilterBinding
 
 class FilterFragment : Fragment() {
@@ -22,6 +25,32 @@ class FilterFragment : Fragment() {
     ): View {
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onStop() {
+        val manCheckBox = binding.manCheckBox
+        val womanCheckBox = binding.womanCheckBox
+        val manWomanCheckBox = binding.manWomanCheckBox
+
+        ToiletDbHelper.selection = ""
+        ToiletDbHelper.selectionArgs = arrayOf()
+
+        if (manCheckBox.isChecked)
+        {
+            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
+            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man")
+        }
+        if (womanCheckBox.isChecked)
+        {
+            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
+            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("vrouw")
+        }
+        if (manWomanCheckBox.isChecked)
+        {
+            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
+            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man/vrouw")
+        }
+        super.onStop()
     }
 
     override fun onDestroyView() {

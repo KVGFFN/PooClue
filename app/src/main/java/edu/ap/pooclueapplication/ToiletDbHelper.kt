@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 import androidx.core.content.ContentProviderCompat.requireContext
 import edu.ap.pooclueapplication.ui.map.MapFragment
 
@@ -58,11 +59,28 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
     fun readToilets(): Cursor {
         val db = readableDatabase
-        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR, ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER)
-
+        if (selection == "") {
+            selection = null
+            selectionArgs = arrayOf()
+        }
+        else if (selection?.substring(0,3) =="OR ") {
+            selection = selection?.drop(3)
+        }
         return db.query(
             ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
-            projection,             // The array of columns to return (pass null to get all)
+            null,             // The array of columns to return (pass null to get all)
+            selection,              // The columns for the WHERE clause
+            selectionArgs,          // The values for the WHERE clause
+            null,                   // don't group the rows
+            null,                   // don't filter by row groups
+            null               // The sort order
+        )
+    }
+    fun checkEmptyDB(): Cursor {
+        val db = readableDatabase
+        return db.query(
+            ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
+            null,             // The array of columns to return (pass null to get all)
             null,              // The columns for the WHERE clause
             null,          // The values for the WHERE clause
             null,                   // don't group the rows
@@ -74,5 +92,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     companion object {
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "Toilet.db"
+        var selection :String? = ""
+        var selectionArgs: Array<String> = arrayOf("")
     }
 }

@@ -89,7 +89,7 @@ class MapFragment : Fragment() {
 
         try
         {
-            if (dbHelper.readToilets().count==0) {
+            if (dbHelper.checkEmptyDB().count==0) {
                 var json = ""
                 val policy = StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
