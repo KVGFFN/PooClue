@@ -93,8 +93,14 @@ class MapFragment : Fragment() {
             val jsonObject = JSONObject(json)
             val features = jsonObject.getJSONArray("features")
             for (i in 0 until features.length()) {
-                val features = features.getJSONObject(i)
-                Log.d("MapFragment", features.toString())
+                val geometry = features.getJSONObject(i).getJSONObject("geometry")
+                val coordinates = geometry.getJSONArray("coordinates")
+
+                // LONGITUDE: COORDINATES[0]
+                // LATITUDE: COORDINATES[1]
+
+                Log.d("LATITUDE", "coordinates: ${coordinates[1]}")
+                Log.d("LONGITUDE", "coordinates: ${coordinates[0]}")
 
 
 
