@@ -90,7 +90,7 @@ class MapFragment : Fragment() {
                 val policy = StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
                 StrictMode.setThreadPolicy(policy)
-                val url = URL("https://opendata.arcgis.com/api/v3/datasets/eda49af804c9467e97393ca35e34714b_8/downloads/data?format=geojson&spatialRefId=4326")
+                val url = URL("https://geodata.antwerpen.be/arcgissql/rest/services/P_Portal/portal_publiek1/MapServer/8/query?outFields=*&where=1%3D1&f=geojson")
                 val connection = url.openConnection()
                 BufferedReader(InputStreamReader(connection.getInputStream())).use { inp ->
                     var line: String?
