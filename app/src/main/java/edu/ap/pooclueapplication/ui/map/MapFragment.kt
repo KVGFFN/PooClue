@@ -2,23 +2,22 @@ package edu.ap.pooclueapplication.ui.map
 
 import android.Manifest
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import edu.ap.pooclueapplication.ToiletContract
+import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentMapBinding
 import org.json.JSONObject
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.compass.CompassOverlay
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import kotlin.math.log
 
 class MapFragment : Fragment() {
 
@@ -70,9 +69,6 @@ class MapFragment : Fragment() {
         map.controller.setZoom(18.0)
         map.minZoomLevel = 10.0
 
-
-
-
         return root
     }
 
@@ -80,37 +76,43 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val map = binding.mapview
+        val dbHelper = ToiletDbHelper(this.requireContext())
 
         try
         {
-            val assetManager = requireContext().assets
-            val inputStream = assetManager.open("openbaar_toilet.geojson")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            val json = String(buffer, Charsets.UTF_8)
-            val jsonObject = JSONObject(json)
-            val features = jsonObject.getJSONArray("features")
-            for (i in 0 until features.length()) {
-                val geometry = features.getJSONObject(i).getJSONObject("geometry")
-                val coordinates = geometry.getJSONArray("coordinates")
-
-                // LONGITUDE: COORDINATES[0]
-                // LATITUDE: COORDINATES[1]
-
-                Log.d("LATITUDE", "coordinates: ${coordinates[1]}")
-                Log.d("LONGITUDE", "coordinates: ${coordinates[0]}")
-
-                // place marker on osm map
-                val marker = Marker(map)
-                marker.position = GeoPoint(coordinates[1].toString().toDouble(), coordinates[0].toString().toDouble())
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                map.overlays.add(marker)
-
-
-
+            if (dbHelper.readToilets().count==0) {
+                val assetManager = requireContext().assets
+                val inputStream = assetManager.open("openbaar_toilet.geojson")
+                val size = inputStream.available()
+                val buffer = ByteArray(size)
+                inputStream.read(buffer)
+                inputStream.close()
+                val json = String(buffer, Charsets.UTF_8)
+                val jsonObject = JSONObject(json)
+                val features = jsonObject.getJSONArray("features")
+                for (i in 0 until features.length()) {
+                    val geometry = features.getJSONObject(i).getJSONObject("geometry")
+                    val coordinates = geometry.getJSONArray("coordinates")
+                    dbHelper.writeToilet(
+                        coordinates[0].toString().toDouble(),
+                        coordinates[1].toString().toDouble()
+                    )
+                }
             }
+            val cursor = dbHelper.readToilets()
+            with(cursor) {
+                while (moveToNext()) {
+                    val longitude = getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE))
+                    val latitude = getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
+                    val marker = Marker(map)
+                    marker.position = GeoPoint(latitude, longitude)
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    map.overlays.add(marker)
+                }
+            }
+            Log.d("count", cursor.count.toString())
+            cursor.close()
+
         }
         catch (e: Exception)
         {
