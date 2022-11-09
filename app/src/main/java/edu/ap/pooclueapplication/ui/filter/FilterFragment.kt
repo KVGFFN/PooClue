@@ -31,6 +31,7 @@ class FilterFragment : Fragment() {
         val manCheckBox = binding.manCheckBox
         val womanCheckBox = binding.womanCheckBox
         val manWomanCheckBox = binding.manWomanCheckBox
+        val wheelchairCheckBox = binding.wheelchairCheckBox
 
         ToiletDbHelper.selection = ""
         ToiletDbHelper.selectionArgs = arrayOf()
@@ -39,18 +40,30 @@ class FilterFragment : Fragment() {
         {
             ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
             ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man")
+            addWheelchairAccess(wheelchairCheckBox.isChecked)
         }
         if (womanCheckBox.isChecked)
         {
             ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
             ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("vrouw")
+            addWheelchairAccess(wheelchairCheckBox.isChecked)
         }
         if (manWomanCheckBox.isChecked)
         {
             ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
             ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man/vrouw")
+            addWheelchairAccess(wheelchairCheckBox.isChecked)
         }
         super.onStop()
+    }
+
+    fun addWheelchairAccess(wheelchair: Boolean)
+    {
+        if (wheelchair)
+        {
+            ToiletDbHelper.selection += "AND ${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} = ? "
+            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("ja")
+        }
     }
 
     override fun onDestroyView() {
