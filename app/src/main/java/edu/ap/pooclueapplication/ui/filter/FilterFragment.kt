@@ -37,42 +37,25 @@ class FilterFragment : Fragment() {
         ToiletDbHelper.selection = ""
         ToiletDbHelper.selectionArgs = arrayOf()
 
-        if (manCheckBox.isChecked)
-        {
-            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
-            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man")
-            addWheelchairAccess(wheelchairCheckBox.isChecked)
-            addDiaperAccess(diaperCheckBox.isChecked)
+        if (manCheckBox.isChecked) {
+            addFilter("man",wheelchairCheckBox.isChecked,diaperCheckBox.isChecked)
         }
-        if (womanCheckBox.isChecked)
-        {
-            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
-            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("vrouw")
-            addWheelchairAccess(wheelchairCheckBox.isChecked)
-            addDiaperAccess(diaperCheckBox.isChecked)
+        if (womanCheckBox.isChecked) {
+            addFilter("vrouw",wheelchairCheckBox.isChecked,diaperCheckBox.isChecked)
         }
-        if (manWomanCheckBox.isChecked)
-        {
-            ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
-            ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("man/vrouw")
-            addWheelchairAccess(wheelchairCheckBox.isChecked)
-            addDiaperAccess(diaperCheckBox.isChecked)
+        if (manWomanCheckBox.isChecked) {
+            addFilter("man/vrouw",wheelchairCheckBox.isChecked,diaperCheckBox.isChecked)
         }
         super.onStop()
     }
-
-    fun addWheelchairAccess(wheelchair: Boolean)
-    {
-        if (wheelchair)
-        {
+    fun addFilter(type: String, wheelchair: Boolean, diaper: Boolean) {
+        ToiletDbHelper.selection += "OR ${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} = ? "
+        ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus(type)
+        if (wheelchair) {
             ToiletDbHelper.selection += "AND ${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} = ? "
             ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("ja")
         }
-    }
-    fun addDiaperAccess(diaper: Boolean)
-    {
-        if (diaper)
-        {
+        if (diaper) {
             ToiletDbHelper.selection += "AND ${ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER} = ? "
             ToiletDbHelper.selectionArgs = ToiletDbHelper.selectionArgs.plus("ja")
         }
