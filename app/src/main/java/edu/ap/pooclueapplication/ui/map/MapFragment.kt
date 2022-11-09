@@ -36,6 +36,7 @@ class MapFragment : Fragment() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val map = binding.mapview
+        map.controller.setCenter(GeoPoint(51.22036305695485, 4.401488873168448))
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                 val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
