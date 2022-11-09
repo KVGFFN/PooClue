@@ -16,6 +16,7 @@ object ToiletContract {
         const val COLUMN_NAME_LONGITUDE = "LONGITUDE"
         const val COLUMN_NAME_LATITUDE = "LATITUDE"
         const val COLUMN_NAME_TARGET = "TARGET"
+        const val COLUMN_NAME_WHEELCHAIR = "WHEELCHAIR"
     }
 }
 private const val SQL_CREATE_ENTRIES =
@@ -23,7 +24,8 @@ private const val SQL_CREATE_ENTRIES =
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE} REAL," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE} REAL," +
-            "${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} TEXT)"
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} TEXT," +
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} TEXT)"
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${ToiletContract.ToiletEntry.TABLE_NAME}"
 
@@ -41,18 +43,19 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    fun writeToilet(longitude: Double, latitude: Double, target: String) {
+    fun writeToilet(longitude: Double, latitude: Double, target: String, wheelchair: String) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, longitude)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, latitude)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, target)
+            put(ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR, wheelchair)
         }
         val newRowId = db?.insert(ToiletContract.ToiletEntry.TABLE_NAME, null, values)
     }
     fun readToilets(): Cursor {
         val db = readableDatabase
-        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)
+        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR)
 
         return db.query(
             ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
