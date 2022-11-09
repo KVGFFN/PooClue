@@ -106,7 +106,8 @@ class MapFragment : Fragment() {
                     val coordinates = geometry.getJSONArray("coordinates")
                     dbHelper.writeToilet(
                         coordinates[0].toString().toDouble(),
-                        coordinates[1].toString().toDouble()
+                        coordinates[1].toString().toDouble(),
+                        features.getJSONObject(i).getJSONObject("properties").getString("DOELGROEP")
                     )
                 }
             }

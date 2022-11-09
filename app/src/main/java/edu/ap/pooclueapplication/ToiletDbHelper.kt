@@ -15,13 +15,15 @@ object ToiletContract {
         const val TABLE_NAME = "toilets"
         const val COLUMN_NAME_LONGITUDE = "LONGITUDE"
         const val COLUMN_NAME_LATITUDE = "LATITUDE"
+        const val COLUMN_NAME_TARGET = "TARGET"
     }
 }
 private const val SQL_CREATE_ENTRIES =
     "CREATE TABLE ${ToiletContract.ToiletEntry.TABLE_NAME} (" +
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE} REAL," +
-            "${ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE} REAL)"
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE} REAL," +
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} TEXT)"
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${ToiletContract.ToiletEntry.TABLE_NAME}"
 
@@ -39,19 +41,17 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    fun writeToilet(longitude: Double, latitude: Double) {
+    fun writeToilet(longitude: Double, latitude: Double, target: String) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, longitude)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, latitude)
+            put(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, target)
         }
         val newRowId = db?.insert(ToiletContract.ToiletEntry.TABLE_NAME, null, values)
     }
     fun readToilets(): Cursor {
         val db = readableDatabase
-
-// Define a projection that specifies which columns from the database
-// you will actually use after this query.
         val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE)
 
         return db.query(
@@ -67,7 +67,6 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     companion object {
-        // If you change the database schema, you must increment the database version.
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "Toilet.db"
     }
