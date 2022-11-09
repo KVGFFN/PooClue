@@ -111,7 +111,8 @@ class MapFragment : Fragment() {
                         coordinates[0].toString().toDouble(),
                         coordinates[1].toString().toDouble(),
                         features.getJSONObject(i).getJSONObject("properties").getString("DOELGROEP"),
-                        features.getJSONObject(i).getJSONObject("properties").getString("INTEGRAAL_TOEGANKELIJK")
+                        features.getJSONObject(i).getJSONObject("properties").getString("INTEGRAAL_TOEGANKELIJK"),
+                        features.getJSONObject(i).getJSONObject("properties").getString("LUIERTAFEL"),
                     )
                 }
             }

@@ -17,6 +17,7 @@ object ToiletContract {
         const val COLUMN_NAME_LATITUDE = "LATITUDE"
         const val COLUMN_NAME_TARGET = "TARGET"
         const val COLUMN_NAME_WHEELCHAIR = "WHEELCHAIR"
+        const val COLUMN_NAME_DIAPER = "DIAPER"
     }
 }
 private const val SQL_CREATE_ENTRIES =
@@ -25,7 +26,8 @@ private const val SQL_CREATE_ENTRIES =
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE} REAL," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE} REAL," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} TEXT," +
-            "${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} TEXT)"
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} TEXT," +
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER} TEXT)"
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${ToiletContract.ToiletEntry.TABLE_NAME}"
 
@@ -43,19 +45,20 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    fun writeToilet(longitude: Double, latitude: Double, target: String, wheelchair: String) {
+    fun writeToilet(longitude: Double, latitude: Double, target: String, wheelchair: String, diaper: String) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, longitude)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, latitude)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, target)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR, wheelchair)
+            put(ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER, diaper)
         }
         val newRowId = db?.insert(ToiletContract.ToiletEntry.TABLE_NAME, null, values)
     }
     fun readToilets(): Cursor {
         val db = readableDatabase
-        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR)
+        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR, ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER)
 
         return db.query(
             ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
@@ -66,12 +69,10 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null,                   // don't filter by row groups
             null               // The sort order
         )
-
     }
 
     companion object {
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "Toilet.db"
     }
-
 }
