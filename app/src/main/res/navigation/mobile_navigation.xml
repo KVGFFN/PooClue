@@ -9,7 +9,7 @@
         android:id="@+id/navigation_filter"
         android:name="edu.ap.pooclueapplication.ui.filter.FilterFragment"
         android:label="@string/title_filter"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_filter" />
 
     <fragment
         android:id="@+id/navigation_map"
