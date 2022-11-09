@@ -102,6 +102,12 @@ class MapFragment : Fragment() {
                 Log.d("LATITUDE", "coordinates: ${coordinates[1]}")
                 Log.d("LONGITUDE", "coordinates: ${coordinates[0]}")
 
+                // place marker on osm map
+                val marker = Marker(map)
+                marker.position = GeoPoint(coordinates[1].toString().toDouble(), coordinates[0].toString().toDouble())
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                map.overlays.add(marker)
+
 
 
             }
