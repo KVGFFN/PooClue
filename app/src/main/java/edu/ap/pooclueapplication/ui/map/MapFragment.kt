@@ -2,18 +2,23 @@ package edu.ap.pooclueapplication.ui.map
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import edu.ap.pooclueapplication.databinding.FragmentMapBinding
+import org.json.JSONObject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.compass.CompassOverlay
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import kotlin.math.log
 
 class MapFragment : Fragment() {
 
@@ -64,8 +69,44 @@ class MapFragment : Fragment() {
         map.setUseDataConnection(true);
         map.controller.setZoom(18.0)
         map.minZoomLevel = 10.0
+
+
+
+
         return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val map = binding.mapview
+
+        try
+        {
+            val assetManager = requireContext().assets
+            val inputStream = assetManager.open("openbaar_toilet.geojson")
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            val json = String(buffer, Charsets.UTF_8)
+            val jsonObject = JSONObject(json)
+            val features = jsonObject.getJSONArray("features")
+            for (i in 0 until features.length()) {
+                val features = features.getJSONObject(i)
+                Log.d("MapFragment", features.toString())
+
+
+
+            }
+        }
+        catch (e: Exception)
+        {
+            Log.e("ERROR", "ERROR WHILE LOADING GEOJSON");
+        }
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
