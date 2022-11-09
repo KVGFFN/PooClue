@@ -2,7 +2,9 @@ package edu.ap.pooclueapplication.ui.map
 
 import android.Manifest
 import android.os.Bundle
+import android.os.StrictMode
 import android.provider.BaseColumns
+import android.provider.ContactsContract.CommonDataKinds.Website.URL
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,9 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
 
 class MapFragment : Fragment() {
 
@@ -81,13 +86,18 @@ class MapFragment : Fragment() {
         try
         {
             if (dbHelper.readToilets().count==0) {
-                val assetManager = requireContext().assets
-                val inputStream = assetManager.open("openbaar_toilet.geojson")
-                val size = inputStream.available()
-                val buffer = ByteArray(size)
-                inputStream.read(buffer)
-                inputStream.close()
-                val json = String(buffer, Charsets.UTF_8)
+                var json = ""
+                val policy = StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+                StrictMode.setThreadPolicy(policy)
+                val url = URL("https://opendata.arcgis.com/api/v3/datasets/eda49af804c9467e97393ca35e34714b_8/downloads/data?format=geojson&spatialRefId=4326")
+                val connection = url.openConnection()
+                BufferedReader(InputStreamReader(connection.getInputStream())).use { inp ->
+                    var line: String?
+                    while (inp.readLine().also { line = it } != null) {
+                        json += line.toString()
+                    }
+                }
                 val jsonObject = JSONObject(json)
                 val features = jsonObject.getJSONArray("features")
                 for (i in 0 until features.length()) {
@@ -110,15 +120,12 @@ class MapFragment : Fragment() {
                     map.overlays.add(marker)
                 }
             }
-            Log.d("count", cursor.count.toString())
             cursor.close()
-
         }
         catch (e: Exception)
         {
             Log.e("ERROR", "ERROR WHILE LOADING GEOJSON");
         }
-
     }
 
     override fun onDestroyView() {
