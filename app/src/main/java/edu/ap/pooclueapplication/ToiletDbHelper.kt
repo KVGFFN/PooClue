@@ -52,7 +52,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
     fun readToilets(): Cursor {
         val db = readableDatabase
-        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE)
+        val projection = arrayOf(BaseColumns._ID, ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE, ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)
 
         return db.query(
             ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query

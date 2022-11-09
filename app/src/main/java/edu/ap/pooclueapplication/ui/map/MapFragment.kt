@@ -1,6 +1,8 @@
 package edu.ap.pooclueapplication.ui.map
 
 import android.Manifest
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.StrictMode
 import android.provider.BaseColumns
@@ -11,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import edu.ap.pooclueapplication.R
 import edu.ap.pooclueapplication.ToiletContract
 import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentMapBinding
@@ -119,6 +122,18 @@ class MapFragment : Fragment() {
                     val marker = Marker(map)
                     marker.position = GeoPoint(latitude, longitude)
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="man/vrouw") {
+                        marker.icon = resources.getDrawable(R.drawable.manwoman,resources.newTheme())
+                    }
+                    else if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="man") {
+                        marker.icon = resources.getDrawable(R.drawable.man,resources.newTheme())
+                    }
+                    else if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="vrouw") {
+                        marker.icon = resources.getDrawable(R.drawable.woman,resources.newTheme())
+                    }
+                    else{
+                        break
+                    }
                     map.overlays.add(marker)
                 }
             }
