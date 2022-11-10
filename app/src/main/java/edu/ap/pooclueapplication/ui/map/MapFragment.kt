@@ -113,6 +113,11 @@ class MapFragment : Fragment() {
                         features.getJSONObject(i).getJSONObject("properties").getString("DOELGROEP"),
                         features.getJSONObject(i).getJSONObject("properties").getString("INTEGRAAL_TOEGANKELIJK"),
                         features.getJSONObject(i).getJSONObject("properties").getString("LUIERTAFEL"),
+                        features.getJSONObject(i).getJSONObject("properties").getString("STRAAT")+ " "
+                                + features.getJSONObject(i).getJSONObject("properties").getString("HUISNUMMER") + " "
+                                + features.getJSONObject(i).getJSONObject("properties").getString("POSTCODE"),
+
+
                     )
                 }
             }
