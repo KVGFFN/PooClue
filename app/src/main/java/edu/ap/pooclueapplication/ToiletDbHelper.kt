@@ -79,20 +79,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null               // The sort order
         )
     }
-
-    fun readAddresses(): Cursor {
-        val db = readableDatabase
-        return db.query(
-            ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
-            arrayOf(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS),             // The array of columns to return (pass null to get all)
-            null,              // The columns for the WHERE clause
-            null,          // The values for the WHERE clause
-            null,                   // don't group the rows
-            null,                   // don't filter by row groups
-            null               // The sort order
-        )
-    }
-
+    
     fun checkEmptyDB(): Cursor {
         val db = readableDatabase
         return db.query(
