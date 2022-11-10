@@ -143,8 +143,9 @@ class MapFragment : Fragment() {
         }
         catch (e: Exception)
         {
-            Log.e("ERROR", "ERROR WHILE LOADING GEOJSON");
+            Log.e("ERROR", e.toString());
         }
+        
     }
 
     override fun onDestroyView() {
