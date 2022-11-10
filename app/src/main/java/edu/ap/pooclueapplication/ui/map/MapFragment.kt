@@ -24,6 +24,7 @@ import edu.ap.pooclueapplication.databinding.FragmentMapBinding
 import org.json.JSONObject
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -98,7 +99,6 @@ class MapFragment : Fragment() {
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        val refreshButton = binding.refreshButton
         val map = binding.mapview
         map.setMultiTouchControls(true);
         map.setClickable(true);
@@ -106,18 +106,6 @@ class MapFragment : Fragment() {
         map.controller.setZoom(18.0)
         map.minZoomLevel = 10.0
 
-        try
-        {
-            // on button click, log "Hello world"
-            refreshButton.setOnClickListener()
-            {
-                Log.d("TESTING","kakak");
-            }
-        }
-        catch (e: Exception)
-        {
-            Log.e("ERROR", e.toString());
-        }
 
         return root
     }
@@ -128,16 +116,35 @@ class MapFragment : Fragment() {
 
         val map = binding.mapview
         val dbHelper = ToiletDbHelper(this.requireContext())
-
-
-        try
+        val refreshButton = binding.refreshButton
+        refreshButton.setOnClickListener()
         {
-            if (dbHelper.checkEmptyDB().count==0) {
+            parseJSON(dbHelper,map,true)
+        }
+
+        Log.d("TEST","hallo")
+        parseJSON(dbHelper, map,false)
+    }
+
+    @SuppressLint("Range", "UseCompatLoadingForDrawables")
+    private fun MapFragment.parseJSON(
+        dbHelper: ToiletDbHelper,
+        map: MapView,
+        force: Boolean = false
+    ) {
+        try {
+            Log.d("MapFragment", dbHelper.checkEmptyDB().count.toString())
+
+            if (force) {
+                dbHelper.clearDatabase()
+            }
+            if (dbHelper.checkEmptyDB().count == 0) {
                 var json = ""
                 val policy = StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
                 StrictMode.setThreadPolicy(policy)
-                val url = URL("https://geodata.antwerpen.be/arcgissql/rest/services/P_Portal/portal_publiek1/MapServer/8/query?outFields=*&where=1%3D1&f=geojson")
+                val url =
+                    URL("https://geodata.antwerpen.be/arcgissql/rest/services/P_Portal/portal_publiek1/MapServer/8/query?outFields=*&where=1%3D1&f=geojson")
                 val connection = url.openConnection()
                 BufferedReader(InputStreamReader(connection.getInputStream())).use { inp ->
                     var line: String?
@@ -153,54 +160,50 @@ class MapFragment : Fragment() {
                     dbHelper.writeToilet(
                         coordinates[0].toString().toDouble(),
                         coordinates[1].toString().toDouble(),
-                        features.getJSONObject(i).getJSONObject("properties").getString("DOELGROEP"),
-                        features.getJSONObject(i).getJSONObject("properties").getString("INTEGRAAL_TOEGANKELIJK"),
-                        features.getJSONObject(i).getJSONObject("properties").getString("LUIERTAFEL"),
-                        features.getJSONObject(i).getJSONObject("properties").getString("STRAAT")+ " "
-                                + features.getJSONObject(i).getJSONObject("properties").getString("HUISNUMMER") + " "
-                                + features.getJSONObject(i).getJSONObject("properties").getString("POSTCODE"),
+                        features.getJSONObject(i).getJSONObject("properties")
+                            .getString("DOELGROEP"),
+                        features.getJSONObject(i).getJSONObject("properties")
+                            .getString("INTEGRAAL_TOEGANKELIJK"),
+                        features.getJSONObject(i).getJSONObject("properties")
+                            .getString("LUIERTAFEL"),
+                        features.getJSONObject(i).getJSONObject("properties")
+                            .getString("STRAAT") + " "
+                                + features.getJSONObject(i).getJSONObject("properties")
+                            .getString("HUISNUMMER") + " "
+                                + features.getJSONObject(i).getJSONObject("properties")
+                            .getString("POSTCODE"),
 
 
-                    )
+                        )
                 }
             }
             val cursor = dbHelper.readToilets()
             with(cursor) {
                 while (moveToNext()) {
-                    val longitude = getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE))
-                    val latitude = getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
+                    val longitude =
+                        getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE))
+                    val latitude =
+                        getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
                     val marker = Marker(map)
                     marker.position = GeoPoint(latitude, longitude)
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="man/vrouw") {
-                        marker.icon = resources.getDrawable(R.drawable.manwoman,resources.newTheme())
-                    }
-                    else if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="man") {
-                        marker.icon = resources.getDrawable(R.drawable.man,resources.newTheme())
-                    }
-                    else if(getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET))=="vrouw") {
-                        marker.icon = resources.getDrawable(R.drawable.woman,resources.newTheme())
-                    }
-                    else{
+                    if (getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)) == "man/vrouw") {
+                        marker.icon =
+                            resources.getDrawable(R.drawable.manwoman, resources.newTheme())
+                    } else if (getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)) == "man") {
+                        marker.icon = resources.getDrawable(R.drawable.man, resources.newTheme())
+                    } else if (getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)) == "vrouw") {
+                        marker.icon = resources.getDrawable(R.drawable.woman, resources.newTheme())
+                    } else {
                         break
                     }
                     map.overlays.add(marker)
                 }
             }
             cursor.close()
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             Log.e("ERROR", e.toString());
         }
-
-
-
-
-
-
-
-        
     }
 
     override fun onDestroyView() {

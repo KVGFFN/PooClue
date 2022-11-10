@@ -92,6 +92,11 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null               // The sort order
         )
     }
+    fun clearDatabase() {
+        val db = writableDatabase
+        //cleqr all entries in table
+        db.execSQL("DELETE FROM ${ToiletContract.ToiletEntry.TABLE_NAME}")
+    }
 
     companion object {
         const val DATABASE_VERSION = 1
