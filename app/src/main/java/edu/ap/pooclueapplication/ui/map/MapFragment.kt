@@ -1,8 +1,12 @@
 package edu.ap.pooclueapplication.ui.map
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.provider.BaseColumns
@@ -30,6 +34,7 @@ import java.net.URL
 class MapFragment : Fragment() {
 
     private var _binding: FragmentMapBinding? = null
+    var locationOverlay: MyLocationNewOverlay? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -42,20 +47,38 @@ class MapFragment : Fragment() {
         map.controller.setCenter(GeoPoint(51.22036305695485, 4.401488873168448))
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
-                locationOverlay.enableMyLocation()
-                locationOverlay.enableFollowLocation()
+                locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+                locationOverlay?.enableMyLocation()
+                locationOverlay?.enableFollowLocation()
                 map.overlays.add(locationOverlay)
+                hasLocation = true
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
-                locationOverlay.enableMyLocation()
-                locationOverlay.enableFollowLocation()
+                locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+                locationOverlay?.enableMyLocation()
+                locationOverlay?.enableFollowLocation()
                 map.overlays.add(locationOverlay)
+                hasLocation = true
             } else -> {
+                hasLocation = false
             // No location access granted.
         }
         }
+    }
+
+    override fun onStop() {
+        //val geopointLocation = locationOverlay?.lastFix?.latitude.toString() + "," + locationOverlay?.lastFix?.longitude.toString();
+        try {
+            val longtitude = locationOverlay?.lastFix?.longitude;
+            val latitude = locationOverlay?.lastFix?.latitude;
+            location = GeoPoint(latitude!!, longtitude!!);
+        }
+        catch (e: Exception) {
+            Log.e("Error", e.message.toString())
+            hasLocation = false;
+        }
+
+        super.onStop()
     }
 
     override fun onCreateView(
@@ -81,11 +104,13 @@ class MapFragment : Fragment() {
         return root
     }
 
+    @SuppressLint("Range", "UseCompatLoadingForDrawables")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val map = binding.mapview
         val dbHelper = ToiletDbHelper(this.requireContext())
+
 
         try
         {
@@ -150,11 +175,18 @@ class MapFragment : Fragment() {
         {
             Log.e("ERROR", e.toString());
         }
+
+
         
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        var hasLocation: Boolean = false
+        var location: GeoPoint? = null
     }
 }

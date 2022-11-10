@@ -79,7 +79,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null               // The sort order
         )
     }
-    
+
     fun checkEmptyDB(): Cursor {
         val db = readableDatabase
         return db.query(

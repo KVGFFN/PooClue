@@ -2,6 +2,7 @@ package edu.ap.pooclueapplication.ui.list
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,8 @@ import edu.ap.pooclueapplication.R
 import edu.ap.pooclueapplication.ToiletContract
 import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentListBinding
+import edu.ap.pooclueapplication.ui.map.MapFragment.Companion.hasLocation
+import edu.ap.pooclueapplication.ui.map.MapFragment.Companion.location
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
@@ -44,6 +47,8 @@ class ListFragment : Fragment() {
 
         _binding = FragmentListBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        // get current location via GPS
+        val currentLocation = location
 
         var listAddresses = binding.listAddresses
         val dbHelper = ToiletDbHelper(requireContext());
@@ -54,7 +59,19 @@ class ListFragment : Fragment() {
         with(cursor) {
             while (moveToNext()) {
                 val address = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS))
-                addresses += address.toString();
+                val long = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE))
+                val lat = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
+
+                if (hasLocation)
+                {
+                    var distance = currentLocation?.distanceToAsDouble(GeoPoint(lat.toDouble(), long.toDouble()))
+                    addresses += address.toString() + "\n" + distance.toString();
+                }
+                else
+                {
+                    addresses += address.toString()
+                }
+
                 arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, addresses)
                 listAddresses.adapter = arrayAdapter
             }
