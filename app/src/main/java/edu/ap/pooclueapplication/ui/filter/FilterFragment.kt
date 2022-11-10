@@ -46,6 +46,9 @@ class FilterFragment : Fragment() {
         if (manWomanCheckBox.isChecked) {
             addFilter("man/vrouw",wheelchairCheckBox.isChecked,diaperCheckBox.isChecked)
         }
+        if (!manCheckBox.isChecked && !womanCheckBox.isChecked && !manWomanCheckBox.isChecked) {
+            addFilter(" ",wheelchairCheckBox.isChecked,diaperCheckBox.isChecked)
+        }
         super.onStop()
     }
     fun addFilter(type: String, wheelchair: Boolean, diaper: Boolean) {
