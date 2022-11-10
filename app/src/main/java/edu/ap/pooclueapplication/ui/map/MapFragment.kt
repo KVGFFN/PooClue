@@ -69,13 +69,15 @@ class MapFragment : Fragment() {
     override fun onStop() {
         //val geopointLocation = locationOverlay?.lastFix?.latitude.toString() + "," + locationOverlay?.lastFix?.longitude.toString();
         try {
-            val longtitude = locationOverlay?.lastFix?.longitude;
-            val latitude = locationOverlay?.lastFix?.latitude;
-            location = GeoPoint(latitude!!, longtitude!!);
+            if(locationOverlay != null){
+                val longtitude = locationOverlay?.lastFix?.longitude;
+                val latitude = locationOverlay?.lastFix?.latitude;
+                location = GeoPoint(latitude!!, longtitude!!);
+            }
         }
         catch (e: Exception) {
             Log.e("Error", e.message.toString())
-            hasLocation = false;
+            //hasLocation = false;
         }
 
         super.onStop()

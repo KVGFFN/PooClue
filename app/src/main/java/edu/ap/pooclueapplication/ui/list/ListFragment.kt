@@ -62,10 +62,10 @@ class ListFragment : Fragment() {
                 val long = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE))
                 val lat = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
 
-                if (hasLocation)
-                {
+                if (hasLocation && currentLocation != null) {
                     var distance = currentLocation?.distanceToAsDouble(GeoPoint(lat.toDouble(), long.toDouble()))
-                    addresses += address.toString() + "\n" + distance.toString();
+                    // round distance up
+                    addresses += address.toString() + "\n" + distance?.toInt().toString() + " meters away";
                 }
                 else
                 {
