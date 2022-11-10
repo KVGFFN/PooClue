@@ -19,6 +19,7 @@ object ToiletContract {
         const val COLUMN_NAME_TARGET = "TARGET"
         const val COLUMN_NAME_WHEELCHAIR = "WHEELCHAIR"
         const val COLUMN_NAME_DIAPER = "DIAPER"
+        const val COLUMN_NAME_ADDRESS = "ADDRESS"
     }
 }
 private const val SQL_CREATE_ENTRIES =
@@ -28,7 +29,8 @@ private const val SQL_CREATE_ENTRIES =
             "${ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE} REAL," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_TARGET} TEXT," +
             "${ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR} TEXT," +
-            "${ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER} TEXT)"
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER} TEXT," +
+            "${ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS} TEXT)"
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${ToiletContract.ToiletEntry.TABLE_NAME}"
 
@@ -46,7 +48,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onUpgrade(db, oldVersion, newVersion)
     }
 
-    fun writeToilet(longitude: Double, latitude: Double, target: String, wheelchair: String, diaper: String) {
+    fun writeToilet(longitude: Double, latitude: Double, target: String, wheelchair: String, diaper: String, address: String) {
         val db = writableDatabase
         val values = ContentValues().apply {
             put(ToiletContract.ToiletEntry.COLUMN_NAME_LONGITUDE, longitude)
@@ -54,6 +56,7 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET, target)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_WHEELCHAIR, wheelchair)
             put(ToiletContract.ToiletEntry.COLUMN_NAME_DIAPER, diaper)
+            put(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS, address)
         }
         val newRowId = db?.insert(ToiletContract.ToiletEntry.TABLE_NAME, null, values)
     }
@@ -76,6 +79,20 @@ class ToiletDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null               // The sort order
         )
     }
+
+    fun readAddresses(): Cursor {
+        val db = readableDatabase
+        return db.query(
+            ToiletContract.ToiletEntry.TABLE_NAME,   // The table to query
+            arrayOf(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS),             // The array of columns to return (pass null to get all)
+            null,              // The columns for the WHERE clause
+            null,          // The values for the WHERE clause
+            null,                   // don't group the rows
+            null,                   // don't filter by row groups
+            null               // The sort order
+        )
+    }
+
     fun checkEmptyDB(): Cursor {
         val db = readableDatabase
         return db.query(
