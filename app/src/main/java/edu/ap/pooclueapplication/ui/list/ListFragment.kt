@@ -1,13 +1,24 @@
 package edu.ap.pooclueapplication.ui.list
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListAdapter
+import android.widget.ListView
 import android.widget.TextView
+import androidx.core.view.get
+import androidx.core.view.plusAssign
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import edu.ap.pooclueapplication.R
+import edu.ap.pooclueapplication.ToiletContract
+import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentListBinding
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 
 class ListFragment : Fragment() {
 
@@ -17,16 +28,40 @@ class ListFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    @SuppressLint("Range")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
+
+
+
+
+
     ): View {
         val listViewModel =
             ViewModelProvider(this).get(ListViewModel::class.java)
 
         _binding = FragmentListBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        var listAddresses = binding.listAddresses
+        val dbHelper = ToiletDbHelper(requireContext());
+        var arrayAdapter: ArrayAdapter<*>
+        var addresses = arrayOf<String>()
+
+        val cursor = dbHelper.readToilets()
+        with(cursor) {
+            while (moveToNext()) {
+                val address = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS))
+                addresses += address.toString();
+                arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, addresses)
+                listAddresses.adapter = arrayAdapter
+            }
+        }
+        cursor.close()
+
+
 
         return root
     }
