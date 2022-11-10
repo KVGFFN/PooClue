@@ -40,6 +40,9 @@ class MapFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+
+
+
     val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -95,13 +98,26 @@ class MapFragment : Fragment() {
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
+        val refreshButton = binding.refreshButton
         val map = binding.mapview
         map.setMultiTouchControls(true);
         map.setClickable(true);
         map.setUseDataConnection(true);
         map.controller.setZoom(18.0)
         map.minZoomLevel = 10.0
+
+        try
+        {
+            // on button click, log "Hello world"
+            refreshButton.setOnClickListener()
+            {
+                Log.d("TESTING","kakak");
+            }
+        }
+        catch (e: Exception)
+        {
+            Log.e("ERROR", e.toString());
+        }
 
         return root
     }
@@ -177,6 +193,11 @@ class MapFragment : Fragment() {
         {
             Log.e("ERROR", e.toString());
         }
+
+
+
+
+
 
 
         
