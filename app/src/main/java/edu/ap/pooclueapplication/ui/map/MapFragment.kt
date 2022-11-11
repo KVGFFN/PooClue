@@ -186,6 +186,7 @@ class MapFragment : Fragment() {
                         getDouble(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_LATITUDE))
                     val marker = Marker(map)
                     marker.position = GeoPoint(latitude, longitude)
+                    marker.title = getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_ADDRESS))
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     if (getString(getColumnIndex(ToiletContract.ToiletEntry.COLUMN_NAME_TARGET)) == "man/vrouw") {
                         marker.icon =
