@@ -2,6 +2,7 @@ package edu.ap.pooclueapplication.ui.list
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +21,12 @@ import edu.ap.pooclueapplication.ToiletDbHelper
 import edu.ap.pooclueapplication.databinding.FragmentListBinding
 import edu.ap.pooclueapplication.ui.map.MapFragment.Companion.hasLocation
 import edu.ap.pooclueapplication.ui.map.MapFragment.Companion.location
+import org.json.JSONObject
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
 
 class ListFragment : Fragment() {
 
@@ -77,7 +82,47 @@ class ListFragment : Fragment() {
             }
         }
         cursor.close()
+        binding.swiperefresh.setOnRefreshListener {
+            dbHelper.clearDatabase()
 
+            var json = ""
+            val policy = StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+            StrictMode.setThreadPolicy(policy)
+            val url =
+                URL("https://geodata.antwerpen.be/arcgissql/rest/services/P_Portal/portal_publiek1/MapServer/8/query?outFields=*&where=1%3D1&f=geojson")
+            val connection = url.openConnection()
+            BufferedReader(InputStreamReader(connection.getInputStream())).use { inp ->
+                var line: String?
+                while (inp.readLine().also { line = it } != null) {
+                    json += line.toString()
+                }
+            }
+            val jsonObject = JSONObject(json)
+            val features = jsonObject.getJSONArray("features")
+            for (i in 0 until features.length()) {
+                val geometry = features.getJSONObject(i).getJSONObject("geometry")
+                val coordinates = geometry.getJSONArray("coordinates")
+                dbHelper.writeToilet(
+                    coordinates[0].toString().toDouble(),
+                    coordinates[1].toString().toDouble(),
+                    features.getJSONObject(i).getJSONObject("properties")
+                        .getString("DOELGROEP"),
+                    features.getJSONObject(i).getJSONObject("properties")
+                        .getString("INTEGRAAL_TOEGANKELIJK"),
+                    features.getJSONObject(i).getJSONObject("properties")
+                        .getString("LUIERTAFEL"),
+                    features.getJSONObject(i).getJSONObject("properties")
+                        .getString("STRAAT") + " "
+                            + features.getJSONObject(i).getJSONObject("properties")
+                        .getString("HUISNUMMER") + " "
+                            + features.getJSONObject(i).getJSONObject("properties")
+                        .getString("POSTCODE"),
+                    )
+            }
+
+            binding.swiperefresh.isRefreshing = false
+        }
 
 
         return root
